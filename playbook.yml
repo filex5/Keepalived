@@ -1,0 +1,10 @@
+- name: Depoly website
+  hosts: all
+  become: yes
+  gather_facts: yes
+ # Roles  
+  roles:
+    - apache2
+    - keepalived
+  vars:
+    slave_ip: 10.0.3.205

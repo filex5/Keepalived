@@ -1,0 +1,95 @@
+---
+# tasks file for apache2
+- name: "add app if os dristribution = debian, ubuntu"
+  ansible.builtin.apt:
+    name: 'apache2'
+    state: latest
+    update_cache: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name:  "add app if os distribution = centos, rocky"
+  ansible.builtin.dnf:
+    name: 'httpd'
+    state: latest
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+- name: add user to system
+  ansible.builtin.user:
+    name: '{{ app_user }}'
+    shell: /bin/bash
+    group: www-data
+    append: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: add user to system
+  ansible.builtin.user:
+    name: '{{ app_user }}'
+    shell: /bin/bash
+    group: apache
+    append: yes
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+- name: Create document root
+  file:
+    path: "{{ document_root }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: www-data
+    mode: '0755'
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: Create document root
+  file:
+    path: "{{ document_root }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: apache
+    mode: '0755'
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+- name: copy index.html
+  template:
+    src: index.html.j2
+    dest: "{{ document_root }}/index.html"                                
+    owner: "{{ app_user }}"
+    group: www-data
+    mode: 0644
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: copy index.html
+  template:
+    src: index2.html.j2
+    dest: "{{ document_root }}/index.html"
+    owner: "{{ app_user }}"
+    group: apache
+    mode: 0644
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+- name: copy siet1.conf
+  template:
+    src: site1.conf.j2
+    dest: "/etc/apache2/sites-available/site1.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  notify: reload apache2
+- name: Create log folder
+  file:
+    path: "/var/log/site1/"
+    state: directory
+    owner: "{{ app_user }}"
+    mode: '0755'
+- name: copy siet1.conf
+  template:
+    src: site1.conf.j2
+    dest: "/etc/httpd/conf.d/site1.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload httpd
+    - restart httpd
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+- name: Enable new site
+  shell: /usr/sbin/a2ensite site1.conf
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  notify: 
+    - reload apache2
+    - restart apache2
+
+ 
+
+

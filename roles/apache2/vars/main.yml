@@ -1,0 +1,7 @@
+---
+# vars file for apache2
+site_port: 80
+server_admin_email: "admin@localhost"
+document_root: /var/www/html
+app_user: chujnik
+

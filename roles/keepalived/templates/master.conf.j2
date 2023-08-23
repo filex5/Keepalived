@@ -1,0 +1,42 @@
+global_defs {
+    router_id VM1
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface {{ interface }}  # Twoje interfejsy 
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass mypassword
+    }
+    virtual_ipaddress {
+        {{ virtual_ip }}  # Plywajacy adres IP
+    }
+    notify_start "/etc/keepalived/start_apache.sh"
+    notify_stop "/etc/keepalived/stop_apache.sh"
+}
+
+virtual_server {{ virtual_ip }} 80 {
+    delay_loop 6
+    lb_algo rr
+    lb_kind NAT
+    protocol TCP
+    real_server {{ master_ip }} 80 {
+        weight 1
+        TCP_CHECK {
+            connect_timeout 3
+            retry 2
+        }
+    }
+    real_server {{ slave_ip }} 80 {
+        weight 1
+        TCP_CHECK {
+            connect_timeout 3
+            retry 2
+        }
+    }
+}
+

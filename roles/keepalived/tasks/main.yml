@@ -1,0 +1,88 @@
+---
+# tasks file for keepalived
+- name: "add app if os dristribution = debian, ubuntu"
+  ansible.builtin.apt:
+    name: 'keepalived'
+    state: latest
+    update_cache: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name:  "add app if os distribution = centos, rocky"
+  ansible.builtin.dnf:
+    name: 'keepalived'
+    state: latest
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+- name: copy master conf file
+  template:
+    src: master.conf.j2
+    dest: "/etc/keepalived/keepalived.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: copy master conf file
+  template:
+    src: slave.conf.j2
+    dest: "/etc/keepalived/keepalived.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+- name: copy stop script ubuntu
+  template:
+    src: master-stop_apache.sh.j2
+    dest: "/etc/keepalived/stop_apache.sh"
+    owner: root
+    group: root
+    mode: 0777
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: copy stop script centos
+  template:
+    src: slave-stop_apache.sh.j2
+    dest: "/etc/keepalived/stop_apache.sh"
+    owner: root
+    group: root
+    mode: 0777
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+- name: copy start script ubuntu
+  template:
+    src: master-start_apache.sh.j2
+    dest: "/etc/keepalived/start_apache.sh"
+    owner: root
+    group: root
+    mode: 0777
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: copy start script centos
+  template:
+    src: slave-start_apache.sh.j2
+    dest: "/etc/keepalived/start_apache.sh"
+    owner: root
+    group: root
+    mode: 0777
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+- name: copy service file ubuntu
+  template:
+    src: keepalived-ubuntu.service.j2
+    dest: "/usr/lib/systemd/system/keepalived.service"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: copy service file centos
+  template:
+    src: keepalived-centos.service.j2
+    dest: "/usr/lib/systemd/system/keepalived.service"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+- name: reload keepalived
+  ansible.builtin.systemd:
+    name: keepalived.service
+    state: reloaded
+    daemon_reload: true
+- name: restart keepalived
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: true
+    name: keepalived.service
+

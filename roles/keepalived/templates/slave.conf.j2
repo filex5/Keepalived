@@ -1,0 +1,20 @@
+global_defs {
+    router_id VM2
+}
+
+vrrp_instance VI_1 {
+    state BACKUP
+    interface {{ interface2 }}  # Twoje interfejsy
+    virtual_router_id 51
+    priority 99  # Ustawiamy niższy priorytet niż na VM1
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass mypassword
+    }
+    virtual_ipaddress {
+        {{ virtual_ip }}  # Plywajacy adres IP
+    }
+    notify_start "/etc/keepalived/start_apache.sh"
+    notify_stop "/etc/keepalived/stop_apache.sh"
+}

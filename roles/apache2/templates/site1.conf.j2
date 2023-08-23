@@ -1,0 +1,7 @@
+<VirtualHost *:{{ site_port }}>
+ServerAdmin {{ server_admin_email }}
+DocumentRoot {{ document_root }}
+
+ErrorLog /var/log/site1/error.log
+CustomLog /var/log/site1/access.log combined
+</VirtualHost>

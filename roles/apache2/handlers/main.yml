@@ -1,0 +1,28 @@
+---
+# ROCKY & CENTOS
+- name: reload httpd
+  ansible.builtin.systemd:
+    name: httpd.service
+    state: reloaded
+    daemon_reload: true
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+- name: restart httpd
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: true
+    name: httpd.service
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+# UBUNTU & DEBIAN
+- name: reload apache2
+  ansible.builtin.systemd:
+    name: apache2.service
+    state: reloaded
+    daemon_reload: true
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: restart apache2 
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: true
+    name: apache2.service
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
