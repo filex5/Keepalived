@@ -1,5 +1,18 @@
 ---
 # tasks file for donfilemon.grafana
+- name: Install dependency
+  apt:
+    name: "{{ packages5 }}"
+    update_cache: yes
+  vars:
+    packages5:
+    - vim
+    - apt-transport-https
+    - ca-certificates
+    - wget
+    - curl
+    - gnupg-agent
+    - software-properties-common
 - name: download Graphana deb file
   get_url:
     url: "https://dl.grafana.com/oss/release/grafana_{{ graphana_version }}_amd64.deb"
