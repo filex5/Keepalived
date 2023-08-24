@@ -1,0 +1,27 @@
+- name: Depoly grafana 
+  hosts: grafana
+  become: yes
+  gather_facts: yes
+ # Roles  
+  roles:
+    - grafana
+  vars:
+    slave_ip: 10.0.3.205
+    graphana_version: 10.1.0
+- name: Depoly graphite
+  hosts: graphite
+  become: yes
+  gather_facts: yes
+ # Roles
+  roles:
+    - graphite
+- name: Depoly Collectd
+  hosts: collectd
+  become: yes
+  gather_facts: yes
+ # Roles
+  roles:
+    - collectd
+
+
+

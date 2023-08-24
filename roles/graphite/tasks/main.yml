@@ -1,2 +1,61 @@
 ---
 # tasks file for graphite
+- name: Install dependency
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+  vars:
+    packages:
+    - vim
+    - apt-transport-https
+    - ca-certificates
+    - wget
+    - curl 
+    - gnupg-agent
+    - software-properties-common
+- name: get google key, save in /usr/share/keyrings for newer apt deb syntax
+  get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/trusted.gpg.d/docker-archive-keyring.gpg
+    mode: ugo+rw
+- name: add google apt repository
+  apt_repository:
+    repo: "deb [arch=amd64, signed-by=/etc/apt/trusted.gpg.d/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu jammy stable"
+    state: present
+    update_cache: yes
+    mode: 0644
+    validate_certs: no
+- name: Install docker dependency
+  apt:
+    name: "{{ packages2 }}"
+    update_cache: yes
+  vars:
+    packages2:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+- name: pull an image
+  docker_image:
+    name: graphiteapp/graphite-statsd
+- name: creates multiple directories in one task
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /data/graphite/data
+    - /data/graphite/logs
+    - /data/graphite/conf
+    - /data/graphite/statsd_config
+- name: copy service file ubuntu
+  template:
+    src: graphite.service.j2
+    dest: "/etc/systemd/system/graphite-docker.service"
+    owner: root
+    group: root
+    mode: 0644
+- name: Restart service cron on centos, in all cases, also issue daemon-reload to pick up config changes
+  ansible.builtin.systemd:
+    state: started
+    daemon_reload: true
+    name: graphite-docker
+    enabled: true

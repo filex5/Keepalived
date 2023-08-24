@@ -1,4 +1,10 @@
-[debian-11]
+[keepalived]
 10.0.3.51 ansible_connection=ssh ansible_ssh_user=filex5 ansible_ssh_pass=test123 ansible_sudo_pass=test123 host_key_checking=false ansible_python_interpreter=/usr/bin/python3
-[rockylinux-9]
+10.0.3.205 ansible_connection=ssh ansible_ssh_user=filex5 ansible_ssh_pass=test123 ansible_sudo_pass=test123 host_key_checking=false ansible_python_interpreter=/usr/bin/python3
+[grafana]
+10.0.3.195 ansible_connection=ssh ansible_ssh_user=filex5 ansible_ssh_pass=test123 ansible_sudo_pass=test123 host_key_checking=false ansible_python_interpreter=/usr/bin/python3
+[graphite]
+10.0.3.112 ansible_connection=ssh ansible_ssh_user=filex5 ansible_ssh_pass=test123 ansible_sudo_pass=test123 host_key_checking=false ansible_python_interpreter=/usr/bin/python3
+[collectd]
+10.0.3.51 ansible_connection=ssh ansible_ssh_user=filex5 ansible_ssh_pass=test123 ansible_sudo_pass=test123 host_key_checking=false ansible_python_interpreter=/usr/bin/python3
 10.0.3.205 ansible_connection=ssh ansible_ssh_user=filex5 ansible_ssh_pass=test123 ansible_sudo_pass=test123 host_key_checking=false ansible_python_interpreter=/usr/bin/python3
