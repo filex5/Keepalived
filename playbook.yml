@@ -1,5 +1,5 @@
 - name: Depoly website
-  hosts: all
+  hosts: keepalived
   become: yes
   gather_facts: yes
  # Roles  
@@ -7,4 +7,9 @@
     - apache2
     - keepalived
   vars:
-    slave_ip: 10.0.3.205
+    virtual_ip: 192.168.122.20
+    master_ip: 192.168.122.10
+    slave_ip: 192.168.122.11
+    interface: enp1s0
+    interface2: enp1s0
+

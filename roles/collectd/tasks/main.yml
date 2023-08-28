@@ -9,22 +9,42 @@
     - collectd
     - collectd-utils
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: Install dependency epel
+  ansible.builtin.dnf:
+    name: "{{ packages5 }}"
+    update_cache: yes
+  vars:
+    packages5:
+    - epel-release
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
 - name: Install dependency
   ansible.builtin.dnf:
     name: "{{ packages4 }}"
     update_cache: yes
   vars:
     packages4:
+    - centos-release-opstools
+    - epel-release
     - collectd
     - collectd-utils
+    - rrdtool
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
 - name: copy service file ubuntu
   template:
-    src: collectd.conf.j2
+    src: collectd2.conf.j2
     dest: "/etc/collectd/collectd.conf"
     owner: root
     group: root
     mode: 0644
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: copy service file centOS
+  template:
+    src: collectd.conf.j2
+    dest: "/etc/collectd.d/collectd.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
 - name: copy apache2-graphite
   template:
     src: apache2-graphite.conf.j2
@@ -41,13 +61,6 @@
     group: root
     mode: 0644
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
-- name: copy service file ubuntu
-  template:
-    src: storage-schemas.conf.j2
-    dest: "/etc/carbon/storage-schemas.conf"
-    owner: root
-    group: root
-    mode: 0644
 - name: Restart service apache2 on ubuntu, in all cases, also issue daemon-reload to pick up config changes
   ansible.builtin.systemd:
     state: restarted
@@ -62,12 +75,6 @@
     name: httpd
     enabled: true
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
-- name: Restart service carbon-cache, in all cases, also issue daemon-reload to pick up config changes
-  ansible.builtin.systemd:
-    state: restarted
-    daemon_reload: true
-    name: carbon-cache
-    enabled: true
 - name: Restart service collectd, in all cases, also issue daemon-reload to pick up config changes
   ansible.builtin.systemd:
     state: restarted

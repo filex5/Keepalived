@@ -15,8 +15,8 @@ vrrp_instance VI_1 {
     virtual_ipaddress {
         {{ virtual_ip }}  # Plywajacy adres IP
     }
-    notify_start "/etc/keepalived/start_apache.sh"
-    notify_stop "/etc/keepalived/stop_apache.sh"
+    notify_master "/etc/keepalived/start_apache.sh"
+    notify_backup "/etc/keepalived/stop_apache.sh"
 }
 
 virtual_server {{ virtual_ip }} 80 {

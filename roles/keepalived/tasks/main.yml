@@ -59,22 +59,22 @@
     group: root
     mode: 0777
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
-- name: copy service file ubuntu
-  template:
-    src: keepalived-ubuntu.service.j2
-    dest: "/usr/lib/systemd/system/keepalived.service"
-    owner: root
-    group: root
-    mode: 0644
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-- name: copy service file centos
-  template:
-    src: keepalived-centos.service.j2
-    dest: "/usr/lib/systemd/system/keepalived.service"
-    owner: root
-    group: root
-    mode: 0644
-  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+    #- name: copy service file ubuntu
+    #  template:
+    # src: keepalived-ubuntu.service.j2
+    # dest: "/usr/lib/systemd/system/keepalived.service"
+    # owner: root
+    # group: root
+    # mode: 0644
+    # when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+    #- name: copy service file centos
+    # template:
+    # src: keepalived-centos.service.j2
+    # dest: "/usr/lib/systemd/system/keepalived.service"
+    # owner: root
+    # group: root
+    # mode: 0644
+    # when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
 - name: reload keepalived
   ansible.builtin.systemd:
     name: keepalived.service
