@@ -37,15 +37,15 @@ LoadPlugin logfile
 #LoadPlugin bind
 #LoadPlugin conntrack
 #LoadPlugin contextswitch
-#LoadPlugin cpu
-#LoadPlugin cpufreq
+LoadPlugin cpu
+LoadPlugin cpufreq
 #LoadPlugin csv
 #LoadPlugin curl
 #LoadPlugin curl_json
 #LoadPlugin curl_xml
 #LoadPlugin dbi
-#LoadPlugin df
-#LoadPlugin disk
+LoadPlugin df
+LoadPlugin disk
 #LoadPlugin dns
 #LoadPlugin email
 #LoadPlugin entropy
@@ -55,20 +55,20 @@ LoadPlugin logfile
 #LoadPlugin fscache
 #LoadPlugin gmond
 #LoadPlugin hddtemp
-#LoadPlugin interface
+LoadPlugin interface
 #LoadPlugin ipmi
 #LoadPlugin iptables
 #LoadPlugin ipvs
 #LoadPlugin irq
 #LoadPlugin java
 #LoadPlugin libvirt
-#LoadPlugin load
+LoadPlugin load
 #LoadPlugin madwifi
 #LoadPlugin mbmon
 #LoadPlugin md
 #LoadPlugin memcachec
 #LoadPlugin memcached
-#LoadPlugin memory
+LoadPlugin memory
 #LoadPlugin multimeter
 #LoadPlugin mysql
 #LoadPlugin netlink
@@ -86,7 +86,7 @@ LoadPlugin network
 #	Globals true
 #</LoadPlugin>
 #LoadPlugin pinba
-#LoadPlugin ping
+LoadPlugin ping
 #LoadPlugin postgresql
 #LoadPlugin powerdns
 #LoadPlugin processes
@@ -96,7 +96,7 @@ LoadPlugin network
 #</LoadPlugin>
 #LoadPlugin rrdcached
 #LoadPlugin rrdtool
-#LoadPlugin sensors
+LoadPlugin sensors
 #LoadPlugin serial
 #LoadPlugin snmp
 #LoadPlugin swap
@@ -285,22 +285,22 @@ LoadPlugin write_graphite
 #	</Database>
 #</Plugin>
 
-#<Plugin df>
-#	Device "/dev/sda1"
+<Plugin df>
+	Device "/dev/vda2"
 #	Device "192.168.0.2:/mnt/nfs"
-#	MountPoint "/home"
-#	FSType "ext3"
+	MountPoint "/"
+	FSType "lvm"
 #	IgnoreSelected false
 #	ReportByDevice false
 #	ReportReserved false
 #	ReportInodes false
-#</Plugin>
+</Plugin>
 
-#<Plugin disk>
-#	Disk "hda"
-#	Disk "/sda[23]/"
+<Plugin disk>
+	Disk "vda"
+	Disk "/vda2/"
 #	IgnoreSelected false
-#</Plugin>
+</Plugin>
 
 #<Plugin dns>
 #	Interface "eth0"
@@ -360,10 +360,10 @@ LoadPlugin write_graphite
 #	Port 7634
 #</Plugin>
 
-#<Plugin interface>
-#	Interface "eth0"
-#	IgnoreSelected false
-#</Plugin>
+<Plugin interface>
+	Interface "{{ interface }}"
+	IgnoreSelected false
+</Plugin>
 
 #<Plugin ipmi>
 #	Sensor "some_sensor"
@@ -583,15 +583,15 @@ LoadPlugin write_graphite
 #	<View>
 #</Plugin>
 
-#<Plugin ping>
-#	Host "host.foo.bar"
-#	Host "host.baz.qux"
-#	Interval 1.0
-#	Timeout 0.9
-#	TTL 255
-#	SourceAddress "1.2.3.4"
-#	Device "eth0"
-#	MaxMissed -1
+<Plugin ping>
+	Host "{{ ip_graphite }}"
+	Host "{{ ip_grafana }}"
+	Interval 1.0
+	Timeout 0.9
+	TTL 255
+	SourceAddress "{{ node2_ip }}"
+	Device "{{ interface }}"
+	MaxMissed -1
 #</Plugin>
 
 #<Plugin postgresql>

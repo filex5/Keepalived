@@ -22,6 +22,17 @@
  # Roles
   roles:
     - collectd
+  vars:
+    virtual_ip: 192.168.122.20
+    master_ip: 192.168.122.10
+    slave_ip: 192.168.122.11
+    interface: enp1s0
+    interface2: enp1s0
+    ip_graphite: 192.168.122.6
+    ip_grafana: 192.168.122.5
+    node1_ip: 192.168.122.10
+    node2_ip: 192.168.122.11  
+
 
 
 
