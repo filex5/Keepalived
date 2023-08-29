@@ -32,7 +32,7 @@
 - name: copy service file ubuntu
   template:
     src: collectd2.conf.j2
-    dest: "/etc/collectd/collectd.conf"
+    dest: "/etc/collectd/collectd.conf.d/collectd.conf"
     owner: root
     group: root
     mode: 0644
