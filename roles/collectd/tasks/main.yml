@@ -45,36 +45,36 @@
     group: root
     mode: 0644
   when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
-- name: copy apache2-graphite
-  template:
-    src: apache2-graphite.conf.j2
-    dest: "/etc/apache2/sites-available/apache2-graphite.conf"
-    owner: root
-    group: root
-    mode: 0644
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-- name: copy apache2-graphite
-  template:
-    src: apache2-graphite.conf.j2
-    dest: "/etc/httpd/conf.d/apache2-graphite.conf"
-    owner: root
-    group: root
-    mode: 0644
-  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
-- name: Restart service apache2 on ubuntu, in all cases, also issue daemon-reload to pick up config changes
-  ansible.builtin.systemd:
-    state: restarted
-    daemon_reload: true
-    name: apache2
-    enabled: true
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-- name: Restart servicehttpd on centos, in all cases, also issue daemon-reload to pick up config changes
-  ansible.builtin.systemd:
-    state: restarted
-    daemon_reload: true
-    name: httpd
-    enabled: true
-  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+    #- name: copy apache2-graphite
+    #  template:
+    #    src: apache2-graphite.conf.j2
+    #  dest: "/etc/apache2/sites-available/apache2-graphite.conf"
+    # owner: root
+    # group: root
+    # mode: 0644
+    # when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+    #- name: copy apache2-graphite
+    #  template:
+    #   src: apache2-graphite.conf.j2
+    #  dest: "/etc/httpd/conf.d/apache2-graphite.conf"
+    # owner: root
+    # group: root
+    #  mode: 0644
+    #  when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
+    #- name: Restart service apache2 on ubuntu, in all cases, also issue daemon-reload to pick up config changes
+    # ansible.builtin.systemd:
+    # state: restarted
+    #  daemon_reload: true
+    #  name: apache2
+    #  enabled: true
+    # when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+    #- name: Restart servicehttpd on centos, in all cases, also issue daemon-reload to pick up config changes
+    # ansible.builtin.systemd:
+    #  state: restarted
+    # daemon_reload: true
+    #  name: httpd
+    #  enabled: true
+    # when: ansible_distribution == 'Rocky' or ansible_distribution == 'CentOS'
 - name: Restart service collectd, in all cases, also issue daemon-reload to pick up config changes
   ansible.builtin.systemd:
     state: restarted
