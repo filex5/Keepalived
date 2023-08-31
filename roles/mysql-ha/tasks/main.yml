@@ -60,6 +60,7 @@
 - debug:
     var: mysql_secure
 - name: Create a new database with name '{{ db_name }}'
+  when: inventory_hostname in groups['db2']
   community.mysql.mysql_db:
     name: '{{ db_name }}'
     state: present
@@ -70,14 +71,42 @@
     password: "{{ db_user_passwd }}"
     priv: '*.*:ALL,GRANT'
     state: present
+    host: "{{ item }}"
     login_unix_socket: /run/mysqld/mysqld.sock
-      #- name: Grant replication slave privileges
-      #  mysql_user:
-      #  name: "{{ db_user }}"
-      # priv: '*.*:ALL,GRANT'
-      # host: "%"
-      #  password: '{{ db_user_passwd }}'  # replace with the actual password
-      #   state: present
+  with_items:
+    - "localhost"
+    - "10.0.3.248"
+    - "10.0.3.106"
+    - "10.0.3.1"
+    - "%"
+- name: Specify grants composed of more than one word
+  community.mysql.mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_user_passwd }}"
+    priv: "*.*:REPLICATION CLIENT"
+    host: "{{ item }}"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+  with_items:
+    - "localhost"
+    - "10.0.3.248"
+    - "10.0.3.106"
+    - "10.0.3.1"
+    - "%"
+- name: Specify grants composed of more than one word
+  community.mysql.mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_user_passwd }}"
+    priv: "*.*:REPLICATION SLAVE"
+    host: "{{ item }}"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+  with_items:
+    - "localhost"
+    - "10.0.3.248"
+    - "10.0.3.106"
+    - "10.0.3.1"
+    - "%"
 - name: slave stop
   when: inventory_hostname in groups['db2']
   community.mysql.mysql_replication:
