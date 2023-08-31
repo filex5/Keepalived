@@ -1,0 +1,108 @@
+---
+# tasks file for mysql-ha
+- name: Install dependency
+  apt:
+    name: "{{ packages3 }}"
+    update_cache: yes
+  vars:
+    packages3:
+    - mysql-server
+    - mysql-client
+    - python3-pymysql
+    - python-pymysql
+    - python-dev
+    - gcc
+    - python3-pip
+    - python3-dev
+- name: copy bd1.cnf
+  when: inventory_hostname in groups['db1']
+  template:
+    src: my.cnf.j2
+    dest: "/etc/mysql/mysql.conf.d/mysqld.cnf"
+    owner: root
+    group: root
+    mode: 0644
+- name: copy db2.cnf
+  when: inventory_hostname in groups['db2']
+  template:
+    src: my2.cnf.j2
+    dest: "/etc/mysql/mysql.conf.d/mysqld.cnf"
+    owner: root
+    group: root
+    mode: 0644
+- name: Restart service mysqld, in all cases, also issue daemon-reload to pick up config changes
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: true
+    name: mysql
+    enabled: true
+- name: test mysql_secure_installation
+  mysql_secure_installation:
+    login_password: ''
+    new_password: 
+    user: root
+    login_host: localhost
+    hosts: ['localhost', '127.0.0.1', '::1', '{{  db1_ip }}', '{{ db2_ip }}' ]
+    change_root_password: true
+    remove_anonymous_user: true
+    disallow_root_login_remotely: false
+    remove_test_db: true
+  register: mysql_secure
+  
+# To see detailed output
+- debug:
+    var: mysql_secure
+- name: Create a new database with name '{{ db_name }}'
+  community.mysql.mysql_db:
+    name: '{{ db_name }}'
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+- name: Create database user with name '{{ db_user }}' and password '{{ db_user_passwd }}' with all database privileges
+  community.mysql.mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_user_passwd }}"
+    priv: '*.*:ALL'
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+- name: Simple select query to acme db
+  community.mysql.mysql_query:
+    login_db: '{{ db_name }}'
+    query: grant replication slave on *.* to '{{ db_user }}'@'%'; 
+    login_unix_socket: /run/mysqld/mysqld.sock
+- name: Simple select query to acme db
+  when: inventory_hostname in groups['db2']
+  community.mysql.mysql_query:
+    login_db: '{{ db_name }}'
+    query: slave stop;
+    login_unix_socket: /run/mysqld/mysqld.sock
+- name: Simple select query to acme db
+  when: inventory_hostname in groups['db2']
+  community.mysql.mysql_query:
+    login_db: '{{ db_name }}'
+    query: CHANGE MASTER TO MASTER_HOST = '{{  db1_ip }}', MASTER_USER = '{{ db_user }}', MASTER_PASSWORD = '{{ db_user_passwd }}', MASTER_LOG_FILE = 'mysql-bin.000001', MASTER_LOG_POS = 107;
+    login_unix_socket: /run/mysqld/mysqld.sock
+- name: Simple select query to acme db
+  when: inventory_hostname in groups['db2']
+  community.mysql.mysql_query:
+    login_db: '{{ db_name }}'
+    query: slave start;
+    login_unix_socket: /run/mysqld/mysqld.sock
+- name: Simple select query to acme db
+  when: inventory_hostname in groups['db1']
+  community.mysql.mysql_query:
+    login_db: '{{ db_name }}'
+    query: slave stop;
+    login_unix_socket: /run/mysqld/mysqld.sock
+- name: Simple select query to acme db
+  when: inventory_hostname in groups['db1']
+  community.mysql.mysql_query:
+    login_db: '{{ db_name }}'
+    query: CHANGE MASTER TO MASTER_HOST = '{{  db2_ip }}', MASTER_USER = '{{ db_user }}', MASTER_PASSWORD = '{{ db_user_passwd }}', MASTER_LOG_FILE = 'mysql-bin.000001', MASTER_LOG_POS = 107;
+    login_unix_socket: /run/mysqld/mysqld.sock
+- name: Simple select query to acme db
+  when: inventory_hostname in groups['db1']
+  community.mysql.mysql_query:
+    login_db: '{{ db_name }}'
+    query: slave start;
+    login_unix_socket: /run/mysqld/mysqld.sock
+

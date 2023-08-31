@@ -1,0 +1,14 @@
+- name: Depoly website
+  hosts: db1, db2
+  become: yes
+  gather_facts: yes
+ # Roles  
+  roles:
+    - mysql-ha
+  vars:
+    db1_ip: 10.0.3.248
+    db2_ip: 10.0.3.106
+    db_name: test
+    db_user: tester
+    db_user_passwd: test123
+
