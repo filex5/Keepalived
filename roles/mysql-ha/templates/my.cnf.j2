@@ -47,8 +47,8 @@ user            = mysql
 #
 # Instead of skip-networking the default is now to listen only on
 # localhost which is more compatible and is not less secure.
-#bind-address            = 127.0.0.1
-#mysqlx-bind-address     = 127.0.0.1
+bind-address            = {{ db1_ip }}
+mysqlx-bind-address     = {{ db1_ip }}
 #
 # * Fine Tuning
 #
@@ -93,6 +93,6 @@ server-id             = 1
  log_bin                       = /var/log/mysql/mysql-bin.log
 # binlog_expire_logs_seconds    = 2592000
 max_binlog_size   = 100M
- binlog_do_db          = {{ db_name }}
+# binlog_do_db          = {{ db_name }}
 # binlog_ignore_db      = include_database_name
 
