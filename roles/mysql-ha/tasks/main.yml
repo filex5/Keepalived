@@ -77,6 +77,7 @@
     - "localhost"
     - "{{ db1_ip }}"
     - "{{ db2_ip }}"
+    - "{{ control_machine_ip }}"
 - name: Specify grants composed of more than one word
   community.mysql.mysql_user:
     name: "{{ db_user }}"
@@ -89,6 +90,7 @@
     - "localhost"
     - "{{ db1_ip }}"
     - "{{ db2_ip }}"
+    - "{{ control_machine_ip }}"
 - name: Specify grants composed of more than one word
   community.mysql.mysql_user:
     name: "{{ db_user }}"
@@ -101,9 +103,10 @@
     - "localhost"
     - "{{ db1_ip }}"
     - "{{ db2_ip }}"
+    - "{{ control_machine_ip }}"
 - name: Execute SHOW MASTER STATUS DB1
   when: inventory_hostname in groups['db1']
-  ansible.builtin.shell: "mysql -u your_username -p'your_password' -e 'SHOW MASTER STATUS;'"
+  ansible.builtin.shell: "mysql -u root -p'{{ db_user_passwd }}' -e 'SHOW MASTER STATUS;'"
   register: mysql_master_status_db1
   ignore_errors: yes
   changed_when: false
@@ -111,11 +114,11 @@
   set_fact:
     mysql_position_db1: "{{ mysql_master_status_db1.stdout_lines[1].split('\t')[1] }}"
     mysql_file_db1: "{{ mysql_master_status_db1.stdout_lines[1].split('\t')[0] }}"
-  when: mysql_master_status_db1.rc == 0
+  when: inventory_hostname in groups['db1']
 - name: Display MySQL Master Status DB1
   debug:
     msg: "File: {{ mysql_file_db1 }}, Position: {{ mysql_position_db1 }}"
-  when: mysql_master_status_db1.rc == 0
+  when: inventory_hostname in groups['db1']
 - name: slave stop
   when: inventory_hostname in groups['db2']
   community.mysql.mysql_replication:
@@ -128,8 +131,8 @@
     master_host: "{{ db1_ip }}"
     master_user: "{{ db_user }}"
     master_password: "{{ db_user_passwd }}"
-    master_log_file: "{{ mysql_file_db1 }}"
-    master_log_pos: '{{ mysql_position_db1 }}'
+    master_log_file: "{{ hostvars['db1'].mysql_file_db1 }}"
+    master_log_pos: "{{ hostvars['db1'].mysql_position_db1 }}"
     login_unix_socket: /run/mysqld/mysqld.sock
 - name: slave start
   when: inventory_hostname in groups['db2']
@@ -138,7 +141,7 @@
     login_unix_socket: /run/mysqld/mysqld.sock
 - name: Execute SHOW MASTER STATUS DB2
   when: inventory_hostname in groups['db2']
-  ansible.builtin.shell: "mysql -u your_username -p'your_password' -e 'SHOW MASTER STATUS;'"
+  ansible.builtin.shell: "mysql -u root -p'{{ db_user_passwd }}' -e 'SHOW MASTER STATUS;'"
   register: mysql_master_status_db2
   ignore_errors: yes
   changed_when: false
@@ -146,11 +149,11 @@
   set_fact:
     mysql_position_db2: "{{ mysql_master_status_db2.stdout_lines[1].split('\t')[1] }}"
     mysql_file_db2: "{{ mysql_master_status_db2.stdout_lines[1].split('\t')[0] }}"
-  when: mysql_master_status_db2.rc == 0
+  when: inventory_hostname in groups['db2']
 - name: Display MySQL Master Status DB2
   debug:
     msg: "File: {{ mysql_file_db2 }}, Position: {{ mysql_position_db2 }}"
-  when: mysql_master_status_db2.rc == 0
+  when: inventory_hostname in groups['db2']
 - name: slave stop
   when: inventory_hostname in groups['db1']
   community.mysql.mysql_replication:
@@ -163,8 +166,8 @@
     master_host: "{{ db2_ip }}"
     master_user: "{{ db_user }}"
     master_password: "{{ db_user_passwd }}"
-    master_log_file: "{{ mysql_file_db2 }}"
-    master_log_pos: "{{ mysql_position_db2 }}"
+    master_log_file: "{{ hostvars['db2'].mysql_file_db2 }}"
+    master_log_pos: "{{ hostvars['db2'].mysql_position_db2 }}"
     login_unix_socket: /run/mysqld/mysqld.sock
 - name: slave start
   when: inventory_hostname in groups['db1']

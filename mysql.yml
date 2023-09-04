@@ -6,8 +6,8 @@
   roles:
     - mysql-ha
   vars:
-    db1_ip: 10.0.3.248
-    db2_ip: 10.0.3.106
+    db1_ip: 192.168.1.40
+    db2_ip: 192.168.1.41
     db_name: test
     db_user: tester
     db_user_passwd: test123
