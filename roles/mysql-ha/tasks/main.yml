@@ -75,10 +75,8 @@
     login_unix_socket: /run/mysqld/mysqld.sock
   with_items:
     - "localhost"
-    - "10.0.3.248"
-    - "10.0.3.106"
-    - "10.0.3.1"
-    - "%"
+    - "{{ db1_ip }}"
+    - "{{ db2_ip }}"
 - name: Specify grants composed of more than one word
   community.mysql.mysql_user:
     name: "{{ db_user }}"
@@ -89,10 +87,8 @@
     login_unix_socket: /run/mysqld/mysqld.sock
   with_items:
     - "localhost"
-    - "10.0.3.248"
-    - "10.0.3.106"
-    - "10.0.3.1"
-    - "%"
+    - "{{ db1_ip }}"
+    - "{{ db2_ip }}"
 - name: Specify grants composed of more than one word
   community.mysql.mysql_user:
     name: "{{ db_user }}"
@@ -103,10 +99,8 @@
     login_unix_socket: /run/mysqld/mysqld.sock
   with_items:
     - "localhost"
-    - "10.0.3.248"
-    - "10.0.3.106"
-    - "10.0.3.1"
-    - "%"
+    - "{{ db1_ip }}"
+    - "{{ db2_ip }}"
 - name: Execute SHOW MASTER STATUS DB1
   when: inventory_hostname in groups['db1']
   ansible.builtin.shell: "mysql -u your_username -p'your_password' -e 'SHOW MASTER STATUS;'"
